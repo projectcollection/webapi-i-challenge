@@ -28,8 +28,10 @@ app.get(`${base}/:id`, (req, res) => {
 
 app.post(`${base}`,(req, res) => {
     const {name, bio} = req.body
-    if(!name || !bio) res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
-
+    console.log(name, bio)
+    if(!name || !bio) {
+        res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+    }
     db.insert(req.body).then(dbres => {
         res.status(201).json(dbres)
     }).catch(err => {
@@ -38,7 +40,18 @@ app.post(`${base}`,(req, res) => {
 })
 
 app.put(`${base}/:id`, (req, res) => {
-    res.send('hello world')
+    const {name, bio} = req.body
+    if(!name || !bio) {
+        res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+    }
+
+    db.update(req.params.id, req.body).then( async dbres => {
+        await db.findById(req.params.id).then(user => {
+            res.status(200).json(user)
+        })
+    }).catch(err => {
+        res.status(500).json({ error: "The user information could not be modified." })
+    })
 })
 
 app.delete(`${base}/:id`, (req, res) => {
