@@ -16,7 +16,6 @@ app.get(`${base}`, (req, res) => {
 
 app.get(`${base}/:id`, (req, res) => {
     const {id} = req.params
-    console.log(id)
 
     db.findById(id).then(dbres => {
         if(!dbres) res.status(404).json({ message: "The user with the specified ID does not exist." }) 
@@ -28,7 +27,14 @@ app.get(`${base}/:id`, (req, res) => {
 })
 
 app.post(`${base}`,(req, res) => {
-    console.log(req.body)
+    const {name, bio} = req.body
+    if(!name || !bio) res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+
+    db.insert(req.body).then(dbres => {
+        res.status(201).json(dbres)
+    }).catch(err => {
+        res.send(500).json({ error: "There was an error while saving the user to the database" })
+    })
 })
 
 app.put(`${base}/:id`, (req, res) => {
