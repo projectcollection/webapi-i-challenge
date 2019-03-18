@@ -7,7 +7,13 @@ const app = express()
 app.use(express.json())
 
 app.get(`${base}`, (req, res) => {
-    res.send('hello world')
+    db.find().then(dbres => {
+        console.log(dbres)
+        res.status(200).json(dbres)
+    }).catch(err => {
+        console.log(err)
+        res.status(500).json({ error: "There was an error while saving the user to the database" })
+    })
 })
 
 app.get(`${base}/:id`, (req, res) => {
@@ -15,7 +21,7 @@ app.get(`${base}/:id`, (req, res) => {
 })
 
 app.post(`${base}`,(req, res) => {
-    res.send('hello world')
+    console.log(req.body)
 })
 
 app.put(`${base}/:id`, (req, res) => {
